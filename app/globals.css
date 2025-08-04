@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+
+/* @tailwind utilities; */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -18,6 +20,41 @@
     --foreground: #ededed;
   }
 }
+
+@layer utilities {
+  .wave-animation::before,
+  .wave-animation::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    transform: translate(-50%, -75%);
+  }
+
+  .wave-animation::before {
+    border-radius: 45%;
+    background: rgba(255, 255, 255, 1);
+    animation: animate 5s linear infinite;
+  }
+
+  .wave-animation::after {
+    border-radius: 40%;
+    background: rgba(255, 255, 255, 0.5);
+    animation: animate 10s linear infinite;
+  }
+
+  @keyframes animate {
+    0% {
+      transform: translate(-50%, -75%) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -75%) rotate(360deg);
+    }
+  }
+}
+
 
 body {
   background: var(--background);
