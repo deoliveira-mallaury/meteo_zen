@@ -1,13 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
-import CustomSearch from "./../CustomSearch/index";
+import { useState } from "react";
+import useCustomSearch from "../CustomSearch"; // hook renommé
 
-const SearchInput = () => {
-    const [search, setSearch] = useState("");
-    const { searchVal, loading, error } = CustomSearch(search);
+const SearchInput = ({ onSelectCity }) => {
+  const [search, setSearch] = useState("");
+  const { searchVal, loading, error } = useCustomSearch(search);
+  const [showList, setShowList] = useState(true);
+  console.log(searchVal);
+
+//   const lon = searchVal.centre.coordinates[0];
+//   const lmat = searchVal.centre.coordinates[1];
+
+  const handleClick = (d) => {
+    setShowList(false); // cache la liste
+    onSelectCity({ nom: d.nom, code: d.code,lon: d.centre.coordinates[0], lat:d.centre.coordinates[1] });
+
+  };
   return (
     <>
-      <form className="flex flex-col flex-wrap justify-center h-[12vh]">
+      <form
+        className="flex flex-col flex-wrap justify-center h-[12vh]"
+        onSubmit={(e) => e.preventDefault()}
+      >
         <label className="w-1/2 text-center ml-[5rem]" htmlFor="city">
           Veuillez saisir votre code postal
         </label>
@@ -15,13 +29,18 @@ const SearchInput = () => {
           type="text"
           name="city"
           id="city"
-          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setShowList(true); //
+          }}
           placeholder="Saisir votre code postal"
           className="w-1/2 h-6 mt-4 ml-[5rem] p-2 rounded-[10px] border border-[#2c74b3] bg-[#fdf9f3]"
         />
         <button
+          type="button"
           className="border-none bg-transparent w-15 mt-auto ml-[-5rem]"
-          href="#"
+          tabIndex={-1}
         >
           <img
             className="w-20 ml-[3rem] mt-[-1.5rem]"
@@ -30,18 +49,17 @@ const SearchInput = () => {
           />
         </button>
       </form>
-      {loading && <p>Chargement...</p>}
+      {loading && <p>Chargement…</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <ul className="autoCompleteList bg-white border border-gray-300 rounded-md shadow-md w-full max-w-md mt-2">
-        {searchVal.map((d, index) => (
-          <li
-            key={index}
-            className="px-4 py-2 hover:bg-blue-100 text-center cursor-pointer transition-colors duration-200"
-          >
-            {d.nom}
-          </li>
-        ))}
-      </ul>
+      {showList && (
+        <ul className="autoCompleteList ...">
+          {searchVal.map((d, index) => (
+            <li onClick={() => handleClick(d)} key={index} className="...">
+              {d.nom}
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 };
