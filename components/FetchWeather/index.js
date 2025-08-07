@@ -7,17 +7,21 @@ const FetchWeather = ({ lat, lon }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!lat || !lon) return;
+    if (!lon || !lat) return;
 
     setLoading(true);
     fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=f6fed325385bde59b45bd6ba4d528e13`
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lon}&lon=${lat}&units=metric&appid=f6fed325385bde59b45bd6ba4d528e13`
     )
       .then((res) => {
         if (!res.ok) throw new Error("Erreur de chargement");
         return res.json();
       })
-      .then((data) => setWeatherData(data))
+      .then((data) => {
+        setWeatherData(data);
+        console.log(data);
+        console.log(data.list);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [lat, lon]);

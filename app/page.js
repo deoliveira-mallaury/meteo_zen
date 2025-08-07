@@ -5,7 +5,7 @@ import { useState } from "react";
 import FetchWeather from "@/components/FetchWeather";
 
 export default function Home() {
-  const [coords, setCoords] = useState({ lat: null, lon: null });
+  const [coords, setCoords] = useState({ lon: null, lat: null });
   const [cityHandler, setCityHandler] = useState("");
 
   const handleCitySelect = ({ nom, code, lon,lat }) => {    
@@ -20,7 +20,7 @@ export default function Home() {
       <Logo />
       <SearchInput onSelectCity={handleCitySelect} />
       <h2 className="text-center">{cityHandler}</h2>
-      {/* N'affiche FetchWeather que si coordonnées valides */}
+
       {coords.lat && coords.lon && (
         <FetchWeather lat={coords.lat} lon={coords.lon} />
       )}

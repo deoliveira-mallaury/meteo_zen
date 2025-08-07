@@ -7,14 +7,21 @@ const SearchInput = ({ onSelectCity }) => {
   const { searchVal, loading, error } = useCustomSearch(search);
   const [showList, setShowList] = useState(true);
   console.log(searchVal);
-
-//   const lon = searchVal.centre.coordinates[0];
-//   const lmat = searchVal.centre.coordinates[1];
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+    setShowList(true); //
+  };
+  //   const lon = searchVal.centre.coordinates[0];
+  //   const lmat = searchVal.centre.coordinates[1];
 
   const handleClick = (d) => {
     setShowList(false); // cache la liste
-    onSelectCity({ nom: d.nom, code: d.code,lon: d.centre.coordinates[0], lat:d.centre.coordinates[1] });
-
+    onSelectCity({
+      nom: d.nom,
+      code: d.code,
+      lon: d.centre.coordinates[0],
+      lat: d.centre.coordinates[1],
+    });
   };
   return (
     <>
@@ -30,10 +37,7 @@ const SearchInput = ({ onSelectCity }) => {
           name="city"
           id="city"
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setShowList(true); //
-          }}
+          onChange={handleChange}
           placeholder="Saisir votre code postal"
           className="w-1/2 h-6 mt-4 ml-[5rem] p-2 rounded-[10px] border border-[#2c74b3] bg-[#fdf9f3]"
         />
