@@ -2,54 +2,30 @@
 import Header from "@/components/Header";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
+import { supabase } from "@/lib/supabase/client";
 export default function Login() {
-  const [userInfo, setUserInfo] = useState({
-    name: "", // Prénom
-    lastname: "", // Nom
-    email: "",
-    password: "",
-    confirmPassword: "",
-    city: "",
-    zip: "",
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // console.log(userInfo);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-
-
-    try {
-      const response = await fetch("/api/Login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: userInfo.email,
-          password: userInfo.password,
-        }),
-      });
-
-      const result = await response.json();
-      console.log(result);
-      if (!response.ok) throw new Error(result.error);
-
-      alert("Connexion réussie !");
-      console.log("Données enregistrées :", result);
-    } catch (err) {
-      console.log("Erreur : " + err.message);
+    if (error) {
+      console.error("Erreur de connexion :", error.message);
+    } else {
+      console.log("Connecté avec succès !");
+      window.location.href = "/"; // Redirection après logout
     }
   };
 
   return (
     <>
       <Header />
-      <form onSubmit={handleSubmit} className="w-90 mx-auto max-w-lg">
+      <form className="w-90 mx-auto max-w-lg">
         {/* Email + Passwords */}
         <div className="w-full md:w-1/2 px-3">
           <label
@@ -59,12 +35,9 @@ export default function Login() {
             Email
           </label>
           <input
-            id="email"
-            name="email"
             type="email"
-            placeholder="jane.doe@example.com"
-            value={userInfo.email}
-            onChange={handleChange}
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
           />
         </div>
@@ -75,21 +48,21 @@ export default function Login() {
           >
             Mot de passe
           </label>
-          <p className="text-gray-600 text-xs italic">
-          </p>
+          <p className="text-gray-600 text-xs italic"></p>
           <input
-            id="password"
-            name="password"
             type="password"
-            placeholder="******************"
-            value={userInfo.password}
-            onChange={handleChange}
+            placeholder="Mot de passe"
+            onChange={(e) => setPassword(e.target.value)}
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
           />
         </div>
 
         <div className="flex justify-center">
-          <button className="border-2 m-5 p-3" type="submit">
+          <button
+            onClick={handleLogin}
+            className="border-2 m-5 p-3"
+            type="submit"
+          >
             Connexion
           </button>
           Pas de compte?

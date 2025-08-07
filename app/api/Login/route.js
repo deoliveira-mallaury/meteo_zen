@@ -1,9 +1,9 @@
 import { supabase } from "@/lib/supabase/client";
 import bcrypt from "bcryptjs";
-
 export async function POST(request) {
   const { email, password } = await request.json();
-  console.log("Session côté serveur ?", request.headers.get("cookie"));
+  // console.log("Session côté serveur ?", request.headers.get("cookie"));
+  // console.log(email, password);
 
   const { data, error } = await supabase
     .from("profils")
@@ -25,8 +25,6 @@ export async function POST(request) {
     });
   }
 
-
-
   return new Response(
     JSON.stringify({
       message: "Connexion réussie",
@@ -34,4 +32,19 @@ export async function POST(request) {
     }),
     { status: 200 }
   );
+}
+export async function GET(request) {
+  try {
+    await supabase.auth.signOut();
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }

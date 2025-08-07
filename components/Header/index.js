@@ -1,6 +1,24 @@
 import Link from "next/link";
+import AuthStatus from "@/app/Hooks/AuthStatus";
 
 const Header = () => {
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/Login", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const result = await response.json();
+      console.log(result);
+      if (!response.ok) throw new Error(result.error);
+      localStorage.clear();
+      window.location.href = "/"; // Redirection après logout
+    } catch (err) {
+      console.error("Erreur : " + err.message);
+    }
+  };
+  const session = AuthStatus();
   return (
     <>
       <header className="flex w-full flex-wrap justify-center">
@@ -17,11 +35,25 @@ const Header = () => {
           </div>
         </a>
         <nav className="w-full flex justify-evenly items-center">
-          <a>Accueil</a>
+          <Link href="/">Accueil</Link>
           <a>Pricing</a>
-          <Link href="/Login">
-            <img className="w-15" src="./icons/account.svg" />
-          </Link>
+          {session ? (
+            <>
+              <Link href="/login" onClick={handleLogout}>
+                Deconnexion
+              </Link>
+              <Link href="/Account">
+                <img className="w-15" src="./icons/account.svg" />
+              </Link>
+            </>
+          ) : (
+            <>
+              {" "}
+              <Link href="/Login">
+                <img className="w-15" src="./icons/account.svg" />
+              </Link>
+            </>
+          )}
         </nav>
       </header>
     </>

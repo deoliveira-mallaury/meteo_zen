@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function Register() {
   const [userInfo, setUserInfo] = useState({
-    name: "", // Prénom
-    lastname: "", // Nom
+    pseudo: "", // Nom
     email: "",
     password: "",
     confirmPassword: "",
@@ -21,31 +20,29 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(userInfo);
-    
+
     if (userInfo.password !== userInfo.confirmPassword) {
       alert("Les mots de passe ne correspondent pas.");
       return;
     }
 
-    ;
     try {
-      const response = await fetch("/api/Profils", {
+      const response = await fetch("/api/Register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: userInfo.name,
-          lastname: userInfo.lastname,
           email: userInfo.email,
           password: userInfo.password,
           city: userInfo.city,
           zip: userInfo.zip,
+          pseudo: userInfo.pseudo,
         }),
       });
 
       const result = await response.json();
       console.log(result);
       if (!response.ok) throw new Error(result.error);
-      
+
       alert("Inscription réussie !");
       console.log("Données enregistrées :", result);
     } catch (err) {
@@ -63,33 +60,16 @@ export default function Register() {
               htmlFor="name"
               className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
             >
-              Prénom
+              Pseudo
             </label>
             <input
-              id="name"
-              name="name"
+              id="pseudo"
+              name="pseudo"
               type="text"
               placeholder="Jane"
-              value={userInfo.name}
+              value={userInfo.pseudo}
               onChange={handleChange}
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-            />
-          </div>
-          <div className="w-full md:w-1/2 px-3">
-            <label
-              htmlFor="lastname"
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            >
-              Nom
-            </label>
-            <input
-              id="lastname"
-              name="lastname"
-              type="text"
-              placeholder="Doe"
-              value={userInfo.lastname}
-              onChange={handleChange}
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             />
           </div>
         </div>
