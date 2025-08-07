@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 
 const FetchWeather = ({ lat, lon }) => {
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
 
   useEffect(() => {
     if (!lon || !lat) return;
@@ -18,23 +19,83 @@ const FetchWeather = ({ lat, lon }) => {
         return res.json();
       })
       .then((data) => {
-        setWeatherData(data);
-        console.log(data);
-        console.log(data.list);
+        const groupedData = {};
+
+        data.list.forEach((entry) => {
+          const parsedDate = new Date(entry.dt_txt);
+          const dateKey = parsedDate.toLocaleDateString("fr-FR", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+
+          const time = parsedDate.toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: "Europe/Paris",
+          });
+
+          const weatherEntry = {
+            time,
+            weather: entry.weather[0].description,
+            temp: entry.main.temp,
+          };
+
+          if (!groupedData[dateKey]) {
+            groupedData[dateKey] = [];
+          }
+
+          groupedData[dateKey].push(weatherEntry);
+        });
+
+        setWeatherData(groupedData);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [lat, lon]);
 
+  const handleClick = (entry) => {
+    alert(`Température : ${entry.temp}°C\nTemps : ${entry.weather}`);
+  };
+
+  const availableDates = Object.keys(weatherData);
+  const selectedDate = availableDates[selectedDayIndex];
+
   if (loading) return <p>Chargement des données météo...</p>;
   if (error) return <p style={{ color: "red" }}>Erreur : {error}</p>;
-  if (!weatherData) return null;
+  if (!selectedDate) return <p>Aucune donnée disponible</p>;
 
   return (
     <div>
-      <p>Température actuelle : {weatherData.list[0].main.temp}°C</p>
-      <p>Temps : {weatherData.list[0].weather[0].description}</p>
-      {/* Affiche plus de détails selon besoin */}
+      <div style={{ marginBottom: "1rem" }}>
+        {availableDates.map((date, index) => (
+          <button
+            key={date}
+            onClick={() => setSelectedDayIndex(index)}
+            style={{
+              marginRight: "0.5rem",
+              backgroundColor: index === selectedDayIndex ? "#007bff" : "#ccc",
+              color: "white",
+              padding: "0.5rem",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            {date}
+          </button>
+        ))}
+      </div>
+
+      <h3>{selectedDate}</h3>
+      <ul>
+        {weatherData[selectedDate].map((entry, index) => (
+          <li onClick={() => handleClick(entry)} key={index}>
+            {entry.time} - {entry.weather} - {entry.temp}°C
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
