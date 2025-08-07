@@ -39,11 +39,11 @@ const Header = () => {
           <a>Pricing</a>
           {session ? (
             <>
+              <Link href="/Account">
+                Compte
+              </Link>
               <Link href="/login" onClick={handleLogout}>
                 Deconnexion
-              </Link>
-              <Link href="/Account">
-                <img className="w-15" src="./icons/account.svg" />
               </Link>
             </>
           ) : (

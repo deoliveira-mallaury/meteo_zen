@@ -41,9 +41,9 @@ export default function Register() {
 
       const result = await response.json();
       console.log(result);
+      window.location.href = "/"; // Redirection après logout
       if (!response.ok) throw new Error(result.error);
 
-      alert("Inscription réussie !");
       console.log("Données enregistrées :", result);
     } catch (err) {
       console.log("Erreur : " + err.message);
