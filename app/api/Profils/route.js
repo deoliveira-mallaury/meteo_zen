@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase/client";
 import bcrypt from "bcryptjs";
-export async function GET() {
+export async function getUser() {
   const { data, error } = await supabase.from("profils").select("*");
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
